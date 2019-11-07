@@ -1,4 +1,4 @@
-package main;
+package frames;
 
 import java.awt.EventQueue;
 import java.sql.Connection;
@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 import utils.DBConnector;
 
 @SuppressWarnings("serial")
-public class ClientFrame extends JPanel {
+public class ServerFrame extends JPanel {
 	DBConnector db = new DBConnector();
 
 	Connection conn;
@@ -20,7 +20,7 @@ public class ClientFrame extends JPanel {
 	private JFrame frame;
 	private JTextField txtSsn;
 	
-	public ClientFrame() {
+	public ServerFrame() {
 		initialize();
 	}
 	
@@ -30,9 +30,9 @@ public class ClientFrame extends JPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClientFrame window = new ClientFrame();
+					ServerFrame window = new ServerFrame();
 
-					window = new ClientFrame();
+					window = new ServerFrame();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -44,7 +44,7 @@ public class ClientFrame extends JPanel {
 	// Initialize the contents of the frame //
 	public void initialize() {
 
-		frame =  new JFrame("Client Frame");
+		frame =  new JFrame("Server Frame");
 		frame.setBounds(100, 100, 500, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
