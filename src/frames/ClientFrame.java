@@ -25,7 +25,6 @@ public class ClientFrame extends JPanel {
 	private JTextField SID, firstName, lastName, STD_ID;
 	
 	public ClientFrame() {
-		initialize();
 	}
 	
 	// Launch the application //
@@ -34,10 +33,11 @@ public class ClientFrame extends JPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClientFrame window = new ClientFrame();
+//					ClientFrame clientWindow = new ClientFrame();
 					LoginFrame loginWindow = new LoginFrame();
 
 					loginWindow.frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -51,6 +51,7 @@ public class ClientFrame extends JPanel {
 		frame =  new JFrame("Client Frame");
 		frame.setBounds(100, 100, 300, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 		frame.getContentPane().setLayout(null);
 	
 		

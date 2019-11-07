@@ -19,6 +19,7 @@ import utils.DBConnector;
 @SuppressWarnings("serial")
 public class LoginFrame extends JPanel {
 	DBConnector db = new DBConnector();
+	ClientFrame clientWindow = new ClientFrame();
 
 	Connection conn;
 	Statement st;
@@ -59,11 +60,11 @@ public class LoginFrame extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String id = userId.getText().strip();
 
-				if(id.equals("") ) {
-					JOptionPane.showMessageDialog(null,"Empty Inputs");
-				}
-
-				else {
+				if(id.equals("1") ) {
+					JOptionPane.showMessageDialog(null,"Success");
+					clientWindow.initialize();
+					frame.dispose();
+				} else {
 
 				}
 			}
