@@ -30,10 +30,8 @@ public class ServerFrame extends JPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ServerFrame window = new ServerFrame();
+//					ServerFrame window = new ServerFrame();
 
-					window = new ServerFrame();
-					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

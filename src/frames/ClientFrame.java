@@ -1,16 +1,17 @@
 package frames;
 
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import utils.DBConnector;
 
 @SuppressWarnings("serial")
@@ -22,7 +23,7 @@ public class ClientFrame extends JPanel {
 	ResultSet rs;
 	
 	private JFrame frame;
-	private JTextField SID, firstName, lastName, STD_ID;
+	private JTextField SID, firstName, lastName, STD_ID, searchName;
 	
 	public ClientFrame() {
 	}
@@ -33,11 +34,8 @@ public class ClientFrame extends JPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-//					ClientFrame clientWindow = new ClientFrame();
 					LoginFrame loginWindow = new LoginFrame();
-
-					loginWindow.frame.setVisible(true);
-					
+					loginWindow.frame.setVisible(true);	
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -49,7 +47,7 @@ public class ClientFrame extends JPanel {
 	public void initialize() {
 
 		frame =  new JFrame("Client Frame");
-		frame.setBounds(100, 100, 300, 300);
+		frame.setBounds(100, 100, 300, 320);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.getContentPane().setLayout(null);
@@ -107,6 +105,68 @@ public class ClientFrame extends JPanel {
             	STD_ID.setText("");
             }
         });
+		
+		searchName = new JTextField();
+		searchName.setBounds(0, 220, 150, 40);
+		frame.getContentPane().add(searchName);
+		searchName.setColumns(10);
+		searchName.setText("  Student Name");
+		
+		searchName.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+            	searchName.setText("");
+            }
+        });
+		
+		
+		
+		// -------------------------- Buttons ---------------------------- //
+		JButton prev = new JButton("Prev");
+		prev.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+		prev.setBounds(10, 100, 50, 40);
+		frame.getContentPane().add(prev);
+		
+		JButton next = new JButton("Next");
+		next.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		next.setBounds(225, 100, 50, 40);
+		frame.getContentPane().add(next);
+		
+		JButton search = new JButton("Search");
+		search.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+		search.setBounds(150, 220, 150, 40);
+		frame.getContentPane().add(search);
+		
+		JButton clear = new JButton("Clear");
+		clear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+		clear.setBounds(0, 260, 150, 40);
+		frame.getContentPane().add(clear);
+		
+		JButton logout = new JButton("Logout");
+		logout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+		logout.setBounds(150, 260, 150, 40);
+		frame.getContentPane().add(logout);
+
 	}
 	
 

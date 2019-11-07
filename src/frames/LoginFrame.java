@@ -25,7 +25,7 @@ public class LoginFrame extends JPanel {
 	Statement st;
 	ResultSet rs;
 
-	JFrame frame;
+	public JFrame frame;
 	private JTextField userId;
 	public LoginFrame() {
 		initialize();
@@ -34,7 +34,7 @@ public class LoginFrame extends JPanel {
 	// Initialize the contents of the frame //
 	public void initialize() {
 
-		frame =  new JFrame("Client Frame");
+		frame =  new JFrame("Login Frame");
 		frame.setBounds(100, 100, 300, 100);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
