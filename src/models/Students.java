@@ -3,31 +3,29 @@ package models;
 
 class Student {
 
-    private String sid;
-    private String stud_id;
-    private String fname;
-    private String sname;
+    private int sid, stud_id;
+    private String fname, sname;
     
-	public Student(String sid, String stud_id, String fname, String sname) {
+	public Student(int sid, int stud_id, String fname, String sname) {
 		this.sid = sid;
 		this.stud_id = stud_id;
 		this.fname = fname;
 		this.sname = sname;
 	}
 
-	public String getSid() {
+	public int getSid() {
 		return sid;
 	}
 
-	public void setSid(String sid) {
+	public void setSid(int sid) {
 		this.sid = sid;
 	}
 
-	public String getStud_id() {
+	public int getStud_id() {
 		return stud_id;
 	}
 
-	public void setStud_id(String stud_id) {
+	public void setStud_id(int stud_id) {
 		this.stud_id = stud_id;
 	}
 

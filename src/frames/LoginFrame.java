@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import models.User;
 import utils.DBConnector;
 
 @SuppressWarnings("serial")
@@ -21,12 +22,10 @@ public class LoginFrame extends JPanel {
 	DBConnector db = new DBConnector();
 	ClientFrame clientWindow = new ClientFrame();
 
-	Connection conn;
-	Statement st;
-	ResultSet rs;
-
 	public JFrame frame;
 	private JTextField userId;
+
+
 	public LoginFrame() {
 		initialize();
 	}
@@ -58,19 +57,29 @@ public class LoginFrame extends JPanel {
 		JButton btbLogin = new JButton("LOGIN");
 		btbLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String id = userId.getText().strip();
+				User user = db.searchByID(userId.getText().strip());
 
-				if(id.equals("1") ) {
-					JOptionPane.showMessageDialog(null,"Success");
+				if(login(user)) {
+					JOptionPane.showMessageDialog(null,user.getUNAME() + " is now Log In.");
 					clientWindow.initialize();
 					frame.dispose();
 				} else {
-
+					JOptionPane.showMessageDialog(null,"Login Fail - User not found");
 				}
 			}
 		});
 		btbLogin.setBounds(180, 20, 100, 40);
 		frame.getContentPane().add(btbLogin);
+	}
+
+	public boolean login(User user) {
+		boolean result;
+		if(user != null) {
+			result = true;
+		} else {
+			result = false;
+		}
+		return result;
 	}
 
 }

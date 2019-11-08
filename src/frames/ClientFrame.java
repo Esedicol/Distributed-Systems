@@ -22,7 +22,7 @@ public class ClientFrame extends JPanel {
 	Statement st;
 	ResultSet rs;
 	
-	private JFrame frame;
+	public JFrame frame;
 	private JTextField SID, firstName, lastName, STD_ID, searchName;
 	
 	public ClientFrame() {
