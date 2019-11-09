@@ -5,10 +5,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
+import models.Student;
 import models.User;
 
 /*
@@ -17,7 +19,7 @@ import models.User;
 
 public class DBConnector {
 	
-	boolean result;
+	
 	
 	public DBConnector() {
 	}
@@ -33,7 +35,7 @@ public class DBConnector {
 		return conn;
 	}
 	
-	
+	// Search User by it UID //
 	public User searchByID (String id) {
 		User user = null;
 		try {
@@ -54,6 +56,58 @@ public class DBConnector {
 		}	
 		return user;
 	}
+	
+	
+	// Get all Students in the database and store in an Array List //
+	public ArrayList<Student> getStudentsList()
+	{
+		ArrayList<Student> studentList = new ArrayList<Student>();
+
+		try {
+			Connection connection = getConnection();
+			Statement st;
+			ResultSet rs;
+			Student students;
+
+			String query = "SELECT * FROM  `students` ";
+
+			st = connection.createStatement();
+			rs = st.executeQuery(query);
+
+			while(rs.next())
+			{
+				students = new Student(rs.getInt("SID"),rs.getInt("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
+				studentList.add(students);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return studentList;
+	}
+	
+    /*
+    Returns ResultSet of records from database
+     */
+    public ResultSet getRecords() throws SQLException{
+        Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+        String sqlGet = "SELECT * FROM students";
+        stmt.executeQuery(sqlGet);
+        ResultSet rs = stmt.getResultSet();
+        return rs;
+    }
+
+    /*
+    Returns ResultSet of found record from database
+     */
+    public ResultSet returnRecord(String id) throws SQLException{
+        Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+        String sqlGet = "SELECT * FROM students WHERE STUD_ID ='" + id + "'";
+        stmt.executeQuery(sqlGet);
+        ResultSet rs = stmt.getResultSet();
+        return rs;
+    }
 	
 
 }

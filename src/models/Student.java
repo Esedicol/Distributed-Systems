@@ -1,7 +1,7 @@
 package models;
 
 
-class Student {
+public class Student {
 
     private int sid, stud_id;
     private String fname, sname;
