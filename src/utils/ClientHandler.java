@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import frames.ServerFrame;
+import frames.Server;
 
 public class ClientHandler extends Thread{
 
@@ -14,9 +14,6 @@ public class ClientHandler extends Thread{
 	private DataInputStream inputFromClient;
 	private DataOutputStream outputToClient;
 	private InetAddress addr;
-
-	DBConnector conn = new DBConnector();
-	ServerFrame sr;
 
 
 	// So for every thread created we have record of the socket itself, the input and output and its address //
@@ -30,13 +27,14 @@ public class ClientHandler extends Thread{
 	public void run(){
 		while(true) {
 			try {
-				
 				while(true) {
 					String input = inputFromClient.readUTF();
 					String [] arr = input.split(",");
 					
-					if(arr[0] == "newClient") {
-						
+					if(arr[0] == "login") {
+//						db.searchByID();
+						outputToClient.writeUTF("go");
+//						message.append("Logging in responce from server");
 					}
 				}
 				

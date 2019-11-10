@@ -8,27 +8,31 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import utils.ClientHandler;
 import utils.DBConnector;
 
-public class ServerFrame extends JFrame {
+public class Server extends JPanel {
 	DBConnector db = new DBConnector();
-	JTextArea message = new JTextArea();
-	JButton exit = new JButton("EXIT");
+	public JTextArea message = new JTextArea();
+	
+	public JFrame frame; 
 
-	public ServerFrame() {
-		setTitle("Server Frame");
-		setSize(500, 400);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
+	public Server() {
+		frame =  new JFrame("MySQL CRUD");
+		frame.setBounds(100, 100, 500, 500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		frame.setVisible(true);
 
-		message.setBounds(0, 0, 500, 300);
-		add(message);
+		message.setBounds(0, 0, 500, 430);
+		frame.getContentPane().add(message);
 		
-		exit.setBounds(0, 300, 500, 50);
-		add(exit);
+		JButton exit = new JButton("EXIT");
+		exit.setBounds(0, 430, 500, 50);
+		frame.getContentPane().add(exit);
 
 		connect();
 
@@ -55,7 +59,7 @@ public class ServerFrame extends JFrame {
 	public boolean connect() {
 		try {
 			db.getConnection();
-			message.append("Successfully Connected to Database at: " + new Date());
+			message.append(" Successfully Connected to Database at: " + new Date());
 			return true;
 		} catch (SQLException e) {
 			message.append("Connection to Database Failed");
@@ -64,4 +68,7 @@ public class ServerFrame extends JFrame {
 		return false;
 	}
 }
+
+
+
 

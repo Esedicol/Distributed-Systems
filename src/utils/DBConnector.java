@@ -18,9 +18,9 @@ import models.User;
  */
 
 public class DBConnector {
-	
-	
-	
+
+
+
 	public DBConnector() {
 	}
 
@@ -34,7 +34,7 @@ public class DBConnector {
 		conn = DriverManager.getConnection("jdbc:mysql://localhost:8889/BSCY4",connectionProps);
 		return conn;
 	}
-	
+
 	// Search User by it UID //
 	public User searchByID (String id) {
 		User user = null;
@@ -45,7 +45,7 @@ public class DBConnector {
 			String query = "SELECT * FROM users WHERE UID = '" + id + "';";
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(query);
-			
+
 			while(rs.next()) {
 				user = new User(rs.getInt("UID"), rs.getString("UNAME"));
 			}
@@ -56,8 +56,8 @@ public class DBConnector {
 		}	
 		return user;
 	}
-	
-	
+
+
 	// Get all Students in the database and store in an Array List //
 	public ArrayList<Student> getStudentsList()
 	{
@@ -84,30 +84,44 @@ public class DBConnector {
 		}
 		return studentList;
 	}
-	
-    /*
-    Returns ResultSet of records from database
-     */
-    public ResultSet getRecords() throws SQLException{
-        Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        String sqlGet = "SELECT * FROM students";
-        stmt.executeQuery(sqlGet);
-        ResultSet rs = stmt.getResultSet();
-        return rs;
-    }
 
-    /*
-    Returns ResultSet of found record from database
-     */
-    public ResultSet returnRecord(String id) throws SQLException{
-        Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        String sqlGet = "SELECT * FROM students WHERE STUD_ID ='" + id + "'";
-        stmt.executeQuery(sqlGet);
-        ResultSet rs = stmt.getResultSet();
-        return rs;
-    }
-	
+	/*
+    Returns ResultSet of records from database
+	 */
+	public ResultSet getRecords() throws SQLException{
+		Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+				ResultSet.CONCUR_UPDATABLE);
+		String sqlGet = "SELECT * FROM students";
+		stmt.executeQuery(sqlGet);
+		ResultSet rs = stmt.getResultSet();
+		return rs;
+	}
+
+
+	public Student getStudent(String sname) {
+		Student students = null;
+		try {
+			Connection connection = getConnection();
+			Statement st;
+			ResultSet rs;
+
+			String query = "SELECT * FROM students WHERE SNAME ='" + sname + "'";
+
+			st = connection.createStatement();
+			rs = st.executeQuery(query);
+
+			while(rs.next())
+			{
+				students = new Student(rs.getInt("SID"),rs.getInt("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return students;
+	}
+
 
 }
+
+
+

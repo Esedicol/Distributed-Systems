@@ -1,12 +1,10 @@
 package main;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import frames.Client;
-import frames.ServerFrame;
+import frames.Server;
 
 public class MainHandler extends JFrame {
 	
@@ -25,6 +23,6 @@ public class MainHandler extends JFrame {
 	
 	public static void main(String[] args) {
 		new MainHandler();
-		new ServerFrame();
+		new Server();
 	}
 }
