@@ -19,11 +19,6 @@ import models.User;
 
 public class DBConnector {
 
-
-
-	public DBConnector() {
-	}
-
 	// *********** Connection Method *********** //
 	public Connection getConnection() throws SQLException {
 		Connection conn = null;
@@ -36,8 +31,9 @@ public class DBConnector {
 	}
 
 	// Search User by it UID //
-	public User searchByID (String id) {
-		User user = null;
+	public String searchByID (String id) {
+		User user;
+		String name = "";
 		try {
 			Connection conn = getConnection();
 
@@ -47,20 +43,20 @@ public class DBConnector {
 			ResultSet rs = st.executeQuery(query);
 
 			while(rs.next()) {
-				user = new User(rs.getInt("UID"), rs.getString("UNAME"));
+				user = new User(rs.getString("UID"), rs.getString("UNAME"));
+				name = user.getUNAME();
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "SQL Query Failed :)");
 		}	
-		return user;
+		return name;
 	}
 
 
 	// Get all Students in the database and store in an Array List //
-	public ArrayList<Student> getStudentsList()
-	{
+	public ArrayList<Student> getStudentsList() {
 		ArrayList<Student> studentList = new ArrayList<Student>();
 
 		try {
@@ -76,7 +72,7 @@ public class DBConnector {
 
 			while(rs.next())
 			{
-				students = new Student(rs.getInt("SID"),rs.getInt("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
+				students = new Student(rs.getString("SID"),rs.getString("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
 				studentList.add(students);
 			}
 		} catch (Exception e) {
@@ -84,18 +80,33 @@ public class DBConnector {
 		}
 		return studentList;
 	}
-
-	/*
-    Returns ResultSet of records from database
-	 */
-	public ResultSet getRecords() throws SQLException{
-		Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-		String sqlGet = "SELECT * FROM students";
-		stmt.executeQuery(sqlGet);
-		ResultSet rs = stmt.getResultSet();
-		return rs;
+	
+	public ArrayList<String> stdList() {
+		ArrayList<Student> std = getStudentsList();
+		ArrayList<String> stdList = new ArrayList<String>();
+		
+		for(int i = 0; i < std.size(); i++) {
+			Student s = std.get(i);
+			String SID = s.getSid();
+			String STDID = s.getStud_id();
+			String fname = s.getFname();
+			String lname = s.getSname();
+			
+			String combine = SID + "," + STDID + "," + fname + "," + lname;
+			stdList.add(combine);
+		}
+		return stdList;
 	}
+
+
+    public ResultSet returnRecord(String id) throws SQLException{
+        Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+        String sqlGet = "SELECT * FROM users WHERE UID ='" + id + "'";
+        stmt.executeQuery(sqlGet);
+        ResultSet rs = stmt.getResultSet();
+        return rs;
+    }
 
 
 	public Student getStudent(String sname) {
@@ -112,7 +123,7 @@ public class DBConnector {
 
 			while(rs.next())
 			{
-				students = new Student(rs.getInt("SID"),rs.getInt("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
+				students = new Student(rs.getString("SID"),rs.getString("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -120,7 +131,12 @@ public class DBConnector {
 		return students;
 	}
 
-
+	
+	public static void main(String[] args) {
+		DBConnector dc = new DBConnector();
+		ArrayList<String> stdList = dc.stdList();
+		System.out.println(stdList);
+	}
 }
 
 

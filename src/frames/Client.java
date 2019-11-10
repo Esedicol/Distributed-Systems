@@ -26,6 +26,7 @@ public class Client extends JPanel {
 
 	public JTextArea clientMessage = new JTextArea();
 	public JTextField SID, firstName, lastName, STD_ID, searchName, userId;
+	public JButton loginBtn = new JButton("Login");
 	public JFrame frame; 
 
 	private Socket socket;
@@ -33,6 +34,10 @@ public class Client extends JPanel {
 	private DataOutputStream outputToServer;
 
 	int currentUserIndex = 0;
+	boolean connectedToServer = false;
+	boolean isLogin = false;
+	String serverResponse;
+	
 
 	public Client() {
 		frame =  new JFrame("MySQL CRUD");
@@ -41,21 +46,39 @@ public class Client extends JPanel {
 		frame.getContentPane().setLayout(null);
 		frame.setVisible(true);
 
-		authenticate();
-
 		try {
 			// Create a socket to connect to the server
-			Socket socket = new Socket("localhost", 8000);
+			socket = new Socket("localhost", 8000);
 
-			// Create an input stream to receive data from the server
+			// Create an input and output stream to the server
 			inputFromServer = new DataInputStream(socket.getInputStream());
-
-			// Create an output stream to send data to the server
 			outputToServer = new DataOutputStream(socket.getOutputStream());
+
+			connectedToServer = true;
+			clientMessage.append(" YAY were connected to the server.");
 		}
 		catch (IOException ex) {
 			clientMessage.append(ex.toString());
 		}
+
+		userId = new JTextField();
+		userId.setBounds(0, 0, 200, 40);
+		frame.getContentPane().add(userId);
+
+		clientMessage.setBounds(0, 300, 300, 500);
+		frame.getContentPane().add(clientMessage);
+
+		loginBtn.addActionListener(e -> {
+			
+			if(userId.getText().equals("")) {
+				clientMessage.append("\n Empty Login Input");	
+			} else {
+				login(userId.getText());
+			}
+
+		});
+		loginBtn.setBounds(200, 0, 100, 40);
+		frame.getContentPane().add(loginBtn);
 	}
 
 	// Initialize the contents of the frame //
@@ -65,19 +88,19 @@ public class Client extends JPanel {
 		frame.getContentPane().add(clientMessage);
 
 		// -------------- TextFields -------------- //
-		SID = new JTextField(" SID");
+		SID = new JTextField(stdArray.get(0).getSid());
 		SID.setBounds(85, 40, 135, 40);
 		frame.getContentPane().add(SID);
 
-		firstName = new JTextField(" First Name");
+		firstName = new JTextField(stdArray.get(0).getFname());
 		firstName.setBounds(85, 80, 135, 40);
 		frame.getContentPane().add(firstName);
 
-		lastName = new JTextField(" Last Name");
+		lastName = new JTextField(stdArray.get(0).getSname());
 		lastName.setBounds(85, 120, 135, 40);
 		frame.getContentPane().add(lastName);
 
-		STD_ID = new JTextField("Student ID");
+		STD_ID = new JTextField(stdArray.get(0).getStud_id());
 		STD_ID.setBounds(85, 160, 135, 40);
 		frame.getContentPane().add(STD_ID);
 
@@ -91,32 +114,12 @@ public class Client extends JPanel {
 		JButton prev = new JButton("Prev");
 		prev.setBounds(10, 100, 50, 40);
 		frame.getContentPane().add(prev);
-		prev.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(currentUserIndex == 0) {
-					currentUserIndex = stdArray.size() -1;
-					displayUser(stdArray.get(currentUserIndex));
-				} else {
-					currentUserIndex = currentUserIndex - 1;
-					displayUser(stdArray.get(currentUserIndex));
-				}
-			}
-		});
+		prev.addActionListener(e -> prevBtn());
 
 		JButton next = new JButton("Next");
 		next.setBounds(235, 100, 50, 40);
 		frame.getContentPane().add(next);
-		next.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(currentUserIndex == stdArray.size() -1) {
-					currentUserIndex = 0;
-					displayUser(stdArray.get(currentUserIndex));
-				} else {
-					currentUserIndex = currentUserIndex + 1;
-					displayUser(stdArray.get(currentUserIndex));
-				}
-			}
-		});
+		next.addActionListener(e -> nextBtn());
 
 		JButton search = new JButton("Search");
 		search.setBounds(150, 220, 150, 40);
@@ -131,7 +134,7 @@ public class Client extends JPanel {
 					Student s = db.getStudent(sname);
 
 					if(s != null) {
-						displayUser(s);
+						displayStudent(s);
 						clientMessage.append("\n User " + s.getFname() + " found.");
 					} else {
 						clientMessage.append("\n User not found.");
@@ -165,56 +168,96 @@ public class Client extends JPanel {
 		});
 	}
 
-	public void authenticate() {
-		userId = new JTextField("  Enter User ID");
-		userId.setBounds(0, 0, 200, 40);
-		frame.getContentPane().add(userId);
-
-		clientMessage.setBounds(0, 300, 300, 500);
-		frame.getContentPane().add(clientMessage);
-
-		JButton login = new JButton("Login");
-		login.addActionListener(e -> login(userId.getText()));
-		login.setBounds(200, 0, 100, 40);
-		frame.getContentPane().add(login);
-	}
-
-	public boolean userIsFound(User user) {
-		boolean result;
-		if(user != null) {
-			result = true;
-		} else {
-			result = false;
-		}
-		return result;
-	}
-
-	public void displayUser(Student student) {
-		SID.setText(Integer.toString(student.getSid()));
+	public void displayStudent(Student student) {
+		SID.setText(student.getSid());
 		firstName.setText(student.getFname());
 		lastName.setText(student.getSname());
-		STD_ID.setText(Integer.toString(student.getStud_id()));
+		STD_ID.setText(student.getStud_id());
 	}
 
-	public void login(String id) {
-		if(id.equals("")){
-			JOptionPane.showMessageDialog(null,"Please Input ID");
-		} else {
+
+	// Method to send login request to server
+	public void login(String userID) {
+		if(connectedToServer == true) {
 			try {
-				outputToServer.writeUTF("login");
+				// if we are connected to the server request to login from server
+				outputToServer.writeUTF("login," + userID);
 				outputToServer.flush();
 
-				String response = inputFromServer.readUTF();
-				clientMessage.append(response);
+				// server response
+				serverResponse = inputFromServer.readUTF();
+				String[] arr = serverResponse.split(",");
 				
+				if(arr[0].equals("userFound")) {
+					initialize();
+					isLogin = true;
+					userId.setVisible(false);
+					loginBtn.setVisible(false);
+					
+					clientMessage.append("\n Welcome back " + arr[1]);
+				} else {
+					clientMessage.append("\n Login failed. Please try again.");
+				}
 				
-			} catch (Exception e) {
-                System.out.println(e);
-            }
-			
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
-
-
+	}
+	
+	
+	
+	public void nextBtn() {
+		if(isLogin) {
+			try {
+				outputToServer.writeUTF("next," + currentUserIndex + "," + stdArray.size());
+				outputToServer.flush();
+				
+				serverResponse = inputFromServer.readUTF();
+				String[] arr = serverResponse.split(",");
+				
+				if(arr[0].equals("nxt")) {
+					currentUserIndex = Integer.parseInt(arr[1]);
+					displayStudent(stdArray.get(currentUserIndex));
+					clientMessage.append("\n Next Button Pressed");
+				} else if(arr[0].equals("nxtLast")) {
+					currentUserIndex = Integer.parseInt(arr[1]);
+					displayStudent(stdArray.get(currentUserIndex));
+					clientMessage.append("\n Last index reached [Starting from Index 1]");
+				} 
+			} catch(IOException o) {
+				o.printStackTrace();
+			}
+		}
+	}
+	
+	
+	
+	public void prevBtn() {
+		if(isLogin) {
+			try {
+				outputToServer.writeUTF("prev," + currentUserIndex + "," + stdArray.size());
+				outputToServer.flush();
+				
+				serverResponse = inputFromServer.readUTF();
+				String[] arr = serverResponse.split(",");
+				
+				if(arr[0].equals("prev")) {
+					currentUserIndex = Integer.parseInt(arr[1]);
+					displayStudent(stdArray.get(currentUserIndex));
+					clientMessage.append("\n Previous Button Pressed");
+				} else if(arr[0].equals("prevFirst")) {
+					currentUserIndex = Integer.parseInt(arr[1]);
+					displayStudent(stdArray.get(currentUserIndex));
+					clientMessage.append("\n First index reached [Starting from Index 5]");
+				} 
+			} catch(IOException o) {
+				o.printStackTrace();
+			}
+		}
 	}
 }
 

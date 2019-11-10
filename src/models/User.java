@@ -2,22 +2,22 @@ package models;
 
 public class User {
 	
-	private int UID;
+	private String UID;
 	private String UNAME;
 	
 	
-	public User(int uID, String uNAME) {
+	public User(String uID, String uNAME) {
 		UID = uID;
 		UNAME = uNAME;
 	}
 
 
-	public int getUID() {
+	public String getUID() {
 		return UID;
 	}
 
 
-	public void setUID(int uID) {
+	public void setUID(String uID) {
 		UID = uID;
 	}
 

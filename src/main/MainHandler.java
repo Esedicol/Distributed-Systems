@@ -1,5 +1,7 @@
 package main;
 
+import java.sql.SQLException;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
@@ -21,8 +23,9 @@ public class MainHandler extends JFrame {
 		newClient.addActionListener(e -> new Client());
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		new MainHandler();
 		new Server();
 	}
+	
 }
