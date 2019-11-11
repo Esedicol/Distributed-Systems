@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 import models.Student;
 import utils.DBConnector;
 
-@SuppressWarnings("serial")
 public class Client extends JPanel {
 	DBConnector db = new DBConnector();
 	ArrayList<Student> stdArray = db.getStudentsList();
@@ -291,23 +290,14 @@ public class Client extends JPanel {
 			clientMessage.setText("");
 			clientMessage.append(currentUserName + " is now logged out.. till next time :)");
 
+			// close socket
 			socket.close();
-			currentUserIndex = 0;
 
-			SID.setVisible(false);
-			firstName.setVisible(false);
-			lastName.setVisible(false);
-			STD_ID.setVisible(false);
-			searchName.setVisible(false);
-
-			clear.setVisible(false);
-			logout.setVisible(false);
-			prev.setVisible(false);
-			next.setVisible(false);
-			search.setVisible(false);
-
-			loginBtn.setVisible(true);
-			userId.setVisible(true);
+			// close Frame
+			frame.dispose();
+			
+			// Open new Client
+			new Client();
 
 		} catch(IOException o) {
 			o.printStackTrace();
