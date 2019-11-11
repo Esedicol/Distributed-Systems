@@ -15,3 +15,7 @@ Every requests made by the client is printed in the Server frame and each printe
 - [Search Button] - search for a user by last name and display that user
 - [Clear Button] - clears every fields
 - [Logout Button] - sign out the user and returns to the login frame
+
+# UML Class Diagram
+
+![UML Diagram](https://github.com/Esedicol/JAVA-Sockets/blob/master/UML.png)
