@@ -14,7 +14,6 @@ import javax.swing.JTextArea;
 import models.User;
 
 public class ClientHandler extends Thread {
-
 	Socket socket;
 	DataInputStream clientIn;
 	DataOutputStream clientOut;
