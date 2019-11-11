@@ -37,7 +37,7 @@ public class Client extends JPanel {
 
 
 	public Client() {
-		frame =  new JFrame("MySQL CRUD");
+		frame =  new JFrame("Client Frame");
 		frame.setBounds(100, 100, 300, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -72,6 +72,7 @@ public class Client extends JPanel {
 				clientMessage.append("\n Empty Login Input");	
 			} else {
 				login(userId.getText());
+				frame.setTitle("Client Frame [" + currentUserName + "]");
 			}
 
 		});
