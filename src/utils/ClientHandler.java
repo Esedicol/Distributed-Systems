@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -44,6 +43,7 @@ public class ClientHandler extends Thread {
 				String param = inputArray[1];
 				String output = "";
 
+				// If client request is to login
 				if(request.equals("login")) {
 					String userName = db.searchByID(param);
 
@@ -56,7 +56,10 @@ public class ClientHandler extends Thread {
 					} else {
 						serverMessage.append("\n [SERVER] Sorry user not found");
 					}
-				} else if (request.equals("next")) {
+				} 
+
+				// If client request to display next student
+				else if (request.equals("next")) {
 					int size = Integer.parseInt(inputArray[2]);
 					int currentIndex = Integer.parseInt(param);
 
@@ -69,7 +72,10 @@ public class ClientHandler extends Thread {
 						output = "nxt," + index;
 						serverMessage.append("\n [" + inputArray[3] + "] 'Next' button pressed. [" + index + "]");
 					}
-				} else if (request.equals("prev")) {
+				} 
+
+				// If client request to display previous student
+				else if (request.equals("prev")) {
 					int size = Integer.parseInt(inputArray[2]);
 					int currentIndex = Integer.parseInt(param);
 
@@ -82,11 +88,17 @@ public class ClientHandler extends Thread {
 						output = "prev," + index;
 						serverMessage.append("\n [ " + inputArray[3] + "] 'Previous' button pressed. [" + index + "]");
 					}
-				} else if(request.equals("clear")) {
+				} 
+
+				// If client wants to clear all fields
+				else if(request.equals("clear")) {
 					int currentIndex = 0;
 					output = "clear," + currentIndex;
 					serverMessage.append("\n [" + inputArray[1] + "] 'Clear' button pressed. [Cleared all fields]");
-				} else if(request.equals("search")) {
+				} 
+
+				// If Client wants to search a student by is last name
+				else if(request.equals("search")) {
 					String sname = param;
 					serverMessage.append("\n [" + inputArray[3] + "] 'Search' button pressed. [Searching for '" + sname + "']");
 
@@ -101,8 +113,12 @@ public class ClientHandler extends Thread {
 						serverMessage.append("\n Index " + sname + " successfully found.");
 
 					}
-				} else if(request.equals("logout")) {
+				} 
+
+				// if student wants to logout
+				else if(request.equals("logout")) {
 					serverMessage.append("\n [SERVER] Loggin out " + param);
+					Thread.currentThread().interrupt();
 				}
 				// Send the response to the client
 				clientOut.writeUTF(output);
