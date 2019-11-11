@@ -80,18 +80,18 @@ public class DBConnector {
 		}
 		return studentList;
 	}
-	
+
 	public ArrayList<String> stdList() {
 		ArrayList<Student> std = getStudentsList();
 		ArrayList<String> stdList = new ArrayList<String>();
-		
+
 		for(int i = 0; i < std.size(); i++) {
 			Student s = std.get(i);
 			String SID = s.getSid();
 			String STDID = s.getStud_id();
 			String fname = s.getFname();
 			String lname = s.getSname();
-			
+
 			String combine = SID + "," + STDID + "," + fname + "," + lname;
 			stdList.add(combine);
 		}
@@ -99,44 +99,53 @@ public class DBConnector {
 	}
 
 
-    public ResultSet returnRecord(String id) throws SQLException{
-        Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        String sqlGet = "SELECT * FROM users WHERE UID ='" + id + "'";
-        stmt.executeQuery(sqlGet);
-        ResultSet rs = stmt.getResultSet();
-        return rs;
-    }
+	public ResultSet returnRecord(String id) throws SQLException{
+		Statement stmt = getConnection().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+				ResultSet.CONCUR_UPDATABLE);
+		String sqlGet = "SELECT * FROM users WHERE UID ='" + id + "'";
+		stmt.executeQuery(sqlGet);
+		ResultSet rs = stmt.getResultSet();
+		return rs;
+	}
 
 
-	public Student getStudent(String sname) {
-		Student students = null;
+	// Search User by it UID //
+	public String searchByLastName (String sname) {
+		Student s;
+		String name = "";
 		try {
-			Connection connection = getConnection();
-			Statement st;
-			ResultSet rs;
+			Connection conn = getConnection();
 
-			String query = "SELECT * FROM students WHERE SNAME ='" + sname + "'";
+			// MySQL Query //
+			String query = "SELECT * FROM students WHERE SNAME = '" + sname + "';";
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(query);
 
-			st = connection.createStatement();
-			rs = st.executeQuery(query);
-
-			while(rs.next())
-			{
-				students = new Student(rs.getString("SID"),rs.getString("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
+			while(rs.next()) {
+				s = new Student(rs.getString("SID"),rs.getString("STUD_ID"),  rs.getString("FNAME"),rs.getString("SNAME"));
+				name = s.getSname();
 			}
-		} catch (Exception e) {
+
+		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		return students;
+			JOptionPane.showMessageDialog(null, "SQL Query Failed :)");
+		}	
+		return name;
 	}
 
-	
-	public static void main(String[] args) {
-		DBConnector dc = new DBConnector();
-		ArrayList<String> stdList = dc.stdList();
-		System.out.println(stdList);
+	public int findIndexByLastName(String sname) {
+		int index = 100;
+		ArrayList<String> stdList = stdList();
+
+		for(int i = 0; i < stdList.size(); i++) {
+			String[] arr = stdList.get(i).split(",");
+			if(arr[3].equals(sname)) {
+				index = i;
+			}
+		}
+		return index;
 	}
+
 }
 
 

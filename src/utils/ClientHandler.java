@@ -18,21 +18,19 @@ public class ClientHandler extends Thread {
 	DataInputStream clientIn;
 	DataOutputStream clientOut;
 	InetAddress address;
-	
-	JTextArea display;
-	
+
+	JTextArea serverMessage;
+
 	DBConnector db = new DBConnector();
 	ArrayList<String> stdList = db.stdList();
 	User user = null;
 	int counter = 0;
-	
-
 
 	public ClientHandler(Socket socket, JTextArea display) throws IOException, SQLException {
 		this.clientIn = new DataInputStream(socket.getInputStream());
 		this.clientOut = new DataOutputStream(socket.getOutputStream());
 		this.socket = socket;
-		this.display = display;
+		this.serverMessage = display;
 		this.address = socket.getInetAddress();
 	}
 
@@ -45,52 +43,67 @@ public class ClientHandler extends Thread {
 				String request = inputArray[0];
 				String param = inputArray[1];
 				String output = "";
-				
-				
+
 				if(request.equals("login")) {
 					String userName = db.searchByID(param);
-					
-					display.append("\n [" + this.address +"] is attempting to Login ....");
-					
+
+					serverMessage.append("\n [" + this.address +"] is attempting to Login ....");
+
 					if(userName != "") {
-						display.append("\n " + userName + " successfully logged in.");
+						serverMessage.append("\n " + userName + " successfully logged in.");
 						output = "userFound," + userName;
-						
+
 					} else {
-						display.append("\n [SERVER] Sorry user not found");
+						serverMessage.append("\n [SERVER] Sorry user not found");
 					}
 				} else if (request.equals("next")) {
 					int size = Integer.parseInt(inputArray[2]);
 					int currentIndex = Integer.parseInt(param);
-							
+
 					if(Integer.parseInt(param) == size - 1) {
 						currentIndex = 0;
 						output = "nxtLast," + currentIndex;
-						display.append("\n\n Max index reach [Restarting from Index 1]");
+						serverMessage.append("\n\n Max index reach [Restarting from Index 1]");
 					} else {
 						int index = Integer.parseInt(param) + 1;
 						output = "nxt," + index;
-						display.append("\n [SERVER] 'Next' button pressed. [" + index + "]");
+						serverMessage.append("\n [SERVER] 'Next' button pressed. [" + index + "]");
 					}
 				} else if (request.equals("prev")) {
 					int size = Integer.parseInt(inputArray[2]);
 					int currentIndex = Integer.parseInt(param);
-							
+
 					if(Integer.parseInt(param) == 0) {
 						currentIndex = size - 1;
 						output = "prevFirst," + currentIndex;
-						display.append("\n\n First index reach [Restarting from last index]");
+						serverMessage.append("\n\n First index reach [Restarting from last index]");
 					} else {
 						int index = Integer.parseInt(param) - 1;
 						output = "prev," + index;
-						display.append("\n [SERVER] 'Previous' button pressed. [" + index + "]");
+						serverMessage.append("\n [SERVER] 'Previous' button pressed. [" + index + "]");
 					}
+				} else if(request.equals("clear")) {
+					int currentIndex = 0;
+					output = "clear," + currentIndex;
+					serverMessage.append("\n [SERVER] 'Clear' button pressed. [Cleared all fields]");
+				} else if(request.equals("search")) {
+					String sname = param;
+					serverMessage.append("\n [SERVER] 'Search' button pressed. [Searching for '" + sname + "']");
+
+					int i = db.findIndexByLastName(sname);
+					int size = Integer.parseInt(inputArray[2]);
+
+					if( i > size + 1 || i < 0) {
+						output = "notFound,null";
+						serverMessage.append("\n '" + sname + "' not found.");	
+					} else {
+						output = "found," + i;
+						serverMessage.append("\n Index " + sname + " successfully found.");
+
+					}
+				} else if(request.equals("logout")) {
+					serverMessage.append("\n [SERVER] Loggin out " + param);
 				}
-				
-				
-				
-
-
 				// Send the response to the client
 				clientOut.writeUTF(output);
 			}catch (IOException ex) {
@@ -98,6 +111,6 @@ public class ClientHandler extends Thread {
 			}
 		}
 	}
-	
+
 
 }

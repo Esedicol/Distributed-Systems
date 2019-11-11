@@ -1,7 +1,5 @@
 package frames;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,13 +8,11 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import models.Student;
-import models.User;
 import utils.DBConnector;
 
 @SuppressWarnings("serial")
@@ -26,7 +22,7 @@ public class Client extends JPanel {
 
 	public JTextArea clientMessage = new JTextArea();
 	public JTextField SID, firstName, lastName, STD_ID, searchName, userId;
-	public JButton loginBtn = new JButton("Login");
+	public JButton prev, next, clear, search, logout, loginBtn;
 	public JFrame frame; 
 
 	private Socket socket;
@@ -37,7 +33,8 @@ public class Client extends JPanel {
 	boolean connectedToServer = false;
 	boolean isLogin = false;
 	String serverResponse;
-	
+	String currentUserName;
+
 
 	public Client() {
 		frame =  new JFrame("MySQL CRUD");
@@ -68,8 +65,9 @@ public class Client extends JPanel {
 		clientMessage.setBounds(0, 300, 300, 500);
 		frame.getContentPane().add(clientMessage);
 
+		loginBtn = new JButton("Login");
 		loginBtn.addActionListener(e -> {
-			
+
 			if(userId.getText().equals("")) {
 				clientMessage.append("\n Empty Login Input");	
 			} else {
@@ -111,60 +109,62 @@ public class Client extends JPanel {
 
 
 		// -------------- Buttons -------------- //
-		JButton prev = new JButton("Prev");
+		prev = new JButton("Prev");
 		prev.setBounds(10, 100, 50, 40);
 		frame.getContentPane().add(prev);
 		prev.addActionListener(e -> prevBtn());
 
-		JButton next = new JButton("Next");
+		next = new JButton("Next");
 		next.setBounds(235, 100, 50, 40);
 		frame.getContentPane().add(next);
 		next.addActionListener(e -> nextBtn());
 
-		JButton search = new JButton("Search");
+		search = new JButton("Search");
 		search.setBounds(150, 220, 150, 40);
 		frame.getContentPane().add(search);
-		search.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(searchName.getText().isEmpty()) {
-					clientMessage.append("\n Empty inputs in seach field.");
-					JOptionPane.showMessageDialog(null," Empty");
-				} else {
-					String sname = searchName.getText().toString().strip();
-					Student s = db.getStudent(sname);
-
-					if(s != null) {
-						displayStudent(s);
-						clientMessage.append("\n User " + s.getFname() + " found.");
-					} else {
-						clientMessage.append("\n User not found.");
-						JOptionPane.showMessageDialog(null," User not found.");
-					}
-				}
+		search.addActionListener( e -> {
+			if(searchName.getText().equals("")) {
+				clientMessage.append("\n Empty Input, please try again.");
+			} else {
+				search(searchName.getText());
 			}
+
 		});
 
-		JButton clear = new JButton("Clear");
+
+		clear = new JButton("Clear");
 		clear.setBounds(0, 260, 150, 40);
 		frame.getContentPane().add(clear);
-		clear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SID.setText("");
-				firstName.setText("");
-				lastName.setText("");
-				STD_ID.setText("");
+		clear.addActionListener( e -> {
 
-				currentUserIndex = 0;
+			try {
+				outputToServer.writeUTF("clear,null");
+				outputToServer.flush();
+
+				serverResponse = inputFromServer.readUTF();
+				String[] arr = serverResponse.split(",");
+
+				if(arr[0].equals("clear")) {
+					currentUserIndex = Integer.parseInt(arr[1]);
+
+					SID.setText("");
+					firstName.setText("");
+					lastName.setText("");
+					STD_ID.setText("");
+
+					clientMessage.setText("");
+					clientMessage.append("\n Cleared all Fields [Index back to 0]");
+				} 
+			} catch(IOException o) {
+				o.printStackTrace();
 			}
 		});
 
-		JButton logout = new JButton("Logout");
+		logout = new JButton("Logout");
 		logout.setBounds(150, 260, 150, 40);
 		frame.getContentPane().add(logout);
-		logout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-			}
+		logout.addActionListener(e -> {
+			logout();
 		});
 	}
 
@@ -188,37 +188,36 @@ public class Client extends JPanel {
 				serverResponse = inputFromServer.readUTF();
 				String[] arr = serverResponse.split(",");
 				
+				currentUserName = arr[1];
+
 				if(arr[0].equals("userFound")) {
 					initialize();
 					isLogin = true;
 					userId.setVisible(false);
 					loginBtn.setVisible(false);
-					
-					clientMessage.append("\n Welcome back " + arr[1]);
+
+					clientMessage.append("\n Welcome back " + currentUserName);
 				} else {
 					clientMessage.append("\n Login failed. Please try again.");
 				}
-				
-
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		}
 	}
-	
-	
-	
+
+
+
 	public void nextBtn() {
 		if(isLogin) {
 			try {
 				outputToServer.writeUTF("next," + currentUserIndex + "," + stdArray.size());
 				outputToServer.flush();
-				
+
 				serverResponse = inputFromServer.readUTF();
 				String[] arr = serverResponse.split(",");
-				
+
 				if(arr[0].equals("nxt")) {
 					currentUserIndex = Integer.parseInt(arr[1]);
 					displayStudent(stdArray.get(currentUserIndex));
@@ -226,25 +225,25 @@ public class Client extends JPanel {
 				} else if(arr[0].equals("nxtLast")) {
 					currentUserIndex = Integer.parseInt(arr[1]);
 					displayStudent(stdArray.get(currentUserIndex));
-					clientMessage.append("\n Last index reached [Starting from Index 1]");
+					clientMessage.append("\n Last index reached [Starting from Index 0]");
 				} 
 			} catch(IOException o) {
 				o.printStackTrace();
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	public void prevBtn() {
 		if(isLogin) {
 			try {
 				outputToServer.writeUTF("prev," + currentUserIndex + "," + stdArray.size());
 				outputToServer.flush();
-				
+
 				serverResponse = inputFromServer.readUTF();
 				String[] arr = serverResponse.split(",");
-				
+
 				if(arr[0].equals("prev")) {
 					currentUserIndex = Integer.parseInt(arr[1]);
 					displayStudent(stdArray.get(currentUserIndex));
@@ -259,6 +258,60 @@ public class Client extends JPanel {
 			}
 		}
 	}
+
+	public void search(String sname) {
+		if(isLogin) {
+			try {
+				outputToServer.writeUTF("search," + sname + "," + stdArray.size());
+				outputToServer.flush();
+
+				serverResponse = inputFromServer.readUTF();
+				String[] arr = serverResponse.split(",");
+
+				if(arr[0].equals("found")) {
+					currentUserIndex = Integer.parseInt(arr[1]);
+					displayStudent(stdArray.get(currentUserIndex));
+					clientMessage.append("\n Search Button Pressed [" + stdArray.get(currentUserIndex).getSname() + " found].");
+				} else if(arr[0].equals("notFound")) {
+					clientMessage.append("\n User not found. Try again.");
+					searchName.setText("");
+				} 
+			} catch(IOException o) {
+				o.printStackTrace();
+			}
+		}
+	}
+
+	public void logout() {
+		try {
+			outputToServer.writeUTF("logout," + currentUserName);
+			outputToServer.flush();
+			clientMessage.setText("");
+			clientMessage.append(currentUserName + " is now logged out.. till next time :)");
+
+			socket.close();
+			currentUserIndex = 0;
+
+			SID.setVisible(false);
+			firstName.setVisible(false);
+			lastName.setVisible(false);
+			STD_ID.setVisible(false);
+			searchName.setVisible(false);
+
+			clear.setVisible(false);
+			logout.setVisible(false);
+			prev.setVisible(false);
+			next.setVisible(false);
+			search.setVisible(false);
+
+			loginBtn.setVisible(true);
+			userId.setVisible(true);
+
+		} catch(IOException o) {
+			o.printStackTrace();
+		}
+	}
+
 }
 
 
