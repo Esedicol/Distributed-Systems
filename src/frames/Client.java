@@ -138,7 +138,7 @@ public class Client extends JPanel {
 		clear.addActionListener( e -> {
 
 			try {
-				outputToServer.writeUTF("clear,null");
+				outputToServer.writeUTF("clear," + currentUserName);
 				outputToServer.flush();
 
 				serverResponse = inputFromServer.readUTF();
@@ -196,6 +196,7 @@ public class Client extends JPanel {
 					userId.setVisible(false);
 					loginBtn.setVisible(false);
 
+					clientMessage.append("");
 					clientMessage.append("\n Welcome back " + currentUserName);
 				} else {
 					clientMessage.append("\n Login failed. Please try again.");
@@ -212,7 +213,7 @@ public class Client extends JPanel {
 	public void nextBtn() {
 		if(isLogin) {
 			try {
-				outputToServer.writeUTF("next," + currentUserIndex + "," + stdArray.size());
+				outputToServer.writeUTF("next," + currentUserIndex + "," + stdArray.size() + "," + currentUserName);
 				outputToServer.flush();
 
 				serverResponse = inputFromServer.readUTF();
@@ -238,7 +239,7 @@ public class Client extends JPanel {
 	public void prevBtn() {
 		if(isLogin) {
 			try {
-				outputToServer.writeUTF("prev," + currentUserIndex + "," + stdArray.size());
+				outputToServer.writeUTF("prev," + currentUserIndex + "," + stdArray.size() + "," + currentUserName);
 				outputToServer.flush();
 
 				serverResponse = inputFromServer.readUTF();
@@ -262,7 +263,7 @@ public class Client extends JPanel {
 	public void search(String sname) {
 		if(isLogin) {
 			try {
-				outputToServer.writeUTF("search," + sname + "," + stdArray.size());
+				outputToServer.writeUTF("search," + sname + "," + stdArray.size() + "," + currentUserName);
 				outputToServer.flush();
 
 				serverResponse = inputFromServer.readUTF();
@@ -309,7 +310,7 @@ public class Client extends JPanel {
 
 		} catch(IOException o) {
 			o.printStackTrace();
-		}
+		} 
 	}
 
 }

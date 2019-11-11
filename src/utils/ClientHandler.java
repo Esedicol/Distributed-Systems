@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -67,7 +68,7 @@ public class ClientHandler extends Thread {
 					} else {
 						int index = Integer.parseInt(param) + 1;
 						output = "nxt," + index;
-						serverMessage.append("\n [SERVER] 'Next' button pressed. [" + index + "]");
+						serverMessage.append("\n [" + inputArray[3] + "] 'Next' button pressed. [" + index + "]");
 					}
 				} else if (request.equals("prev")) {
 					int size = Integer.parseInt(inputArray[2]);
@@ -80,15 +81,15 @@ public class ClientHandler extends Thread {
 					} else {
 						int index = Integer.parseInt(param) - 1;
 						output = "prev," + index;
-						serverMessage.append("\n [SERVER] 'Previous' button pressed. [" + index + "]");
+						serverMessage.append("\n [ " + inputArray[3] + "] 'Previous' button pressed. [" + index + "]");
 					}
 				} else if(request.equals("clear")) {
 					int currentIndex = 0;
 					output = "clear," + currentIndex;
-					serverMessage.append("\n [SERVER] 'Clear' button pressed. [Cleared all fields]");
+					serverMessage.append("\n [" + inputArray[1] + "] 'Clear' button pressed. [Cleared all fields]");
 				} else if(request.equals("search")) {
 					String sname = param;
-					serverMessage.append("\n [SERVER] 'Search' button pressed. [Searching for '" + sname + "']");
+					serverMessage.append("\n [" + inputArray[3] + "] 'Search' button pressed. [Searching for '" + sname + "']");
 
 					int i = db.findIndexByLastName(sname);
 					int size = Integer.parseInt(inputArray[2]);
@@ -108,9 +109,9 @@ public class ClientHandler extends Thread {
 				clientOut.writeUTF(output);
 			}catch (IOException ex) {
 				System.out.println(ex);
-			}
-		}
-	}
+			} 
+		} 
+	} 
 
 
 }
