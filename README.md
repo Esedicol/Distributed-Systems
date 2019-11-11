@@ -1,1 +1,1 @@
-# Java Server Socket and Multithreading
+# Multi-threaded Client Server App
